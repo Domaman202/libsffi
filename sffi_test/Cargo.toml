@@ -1,0 +1,16 @@
+[package]
+name = "sffi_test"
+version = "0.1.0"
+edition = "2024"
+
+[lib]
+name = "sffi_test"
+crate-type = ["cdylib"]
+path = "src/lib.rs"
+
+[[bin]]
+name = "sffi_test"
+path = "src/main.rs"
+
+[dependencies]
+sffi = { path = "../." }
