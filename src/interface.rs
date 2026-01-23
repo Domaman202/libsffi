@@ -125,6 +125,10 @@ impl FuncHandle {
             );
         }
     }
+
+    pub fn as_raw(&self) -> &LibSymbol {
+        &self.symbol
+    }
 }
 
 impl FuncDesc {
