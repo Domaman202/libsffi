@@ -13,7 +13,7 @@ use std::ptr::{null, null_mut};
 
 fn main() {
     unsafe {
-        let mut lib = LibHandle::open("/home/dmn/Workspace/projects/sffi/sffi_test/target/debug/libsffi_test.so").unwrap();
+        let mut lib = LibHandle::open("").unwrap();
 
         let symbol = lib.symbol("puts").unwrap();
         let symbol = transmute::<_, unsafe extern "C" fn(text: *const c_char)>(symbol);
@@ -76,7 +76,7 @@ fn main() {
         }
 
         let mut lib: *mut LibHandle = null_mut();
-        pie!(sffi_lib_open(&mut lib, b"/home/dmn/Workspace/projects/sffi/sffi_test/target/debug/libsffi_test.so\0".as_ptr() as *const c_char));
+        pie!(sffi_lib_open(&mut lib, b"\0".as_ptr() as *const c_char));
 
         let mut symbol: *const c_void = null();
         pie!(sffi_lib_symbol(&mut symbol, lib, b"puts\0".as_ptr() as *const c_char));
@@ -143,4 +143,22 @@ fn main() {
 
         sffi_lib_close(lib);
     }
+}
+
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn add(a: i32, b: i32) -> i32 {
+    a + b
+}
+
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn fadd(a: f32, b: f32) -> f32 {
+    a + b
+}
+
+#[repr(C)]
+pub struct Data(i32, i32, i32);
+
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn sadd(data: *mut Data) {
+    unsafe { (*data).2 = (*data).0 + (*data).1; }
 }
