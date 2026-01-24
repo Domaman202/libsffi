@@ -14,5 +14,5 @@ pub unsafe extern "C" fn sffi_func_call_raw(func: *const FuncHandle, rvalue: *mu
 
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn sffi_func_as_raw(func: *const FuncHandle) -> *const c_void {
-    unsafe { (*func).as_raw().as_raw() }
+    unsafe { (*func).as_raw() }
 }

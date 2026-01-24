@@ -28,7 +28,7 @@ pub unsafe extern "C" fn sffi_lib_open(r_handle: *mut *mut LibHandle, name: *con
 pub unsafe extern "C" fn sffi_lib_symbol(r_symbol: *mut *const c_void, handle: *const LibHandle, name: *const c_char) -> *mut CError {
     unsafe {
         match (*handle)._symbol(name) {
-            Ok(symbol) => { *r_symbol = symbol.as_raw(); null_mut() },
+            Ok(symbol) => { *r_symbol = symbol; null_mut() },
             Err(error) => error.into()
         }
     }

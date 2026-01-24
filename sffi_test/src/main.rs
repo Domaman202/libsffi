@@ -16,7 +16,6 @@ fn main() {
         let mut lib = LibHandle::open("/home/dmn/Workspace/projects/sffi/sffi_test/target/debug/libsffi_test.so").unwrap();
 
         let symbol = lib.symbol("puts").unwrap();
-        let symbol = symbol.as_raw();
         let symbol = transmute::<_, unsafe extern "C" fn(text: *const c_char)>(symbol);
         symbol(transmute(b"(symbol call)\t Hello, Symbol!\0"));
 

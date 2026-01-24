@@ -1,4 +1,6 @@
-use crate::library::LibSymbol;
+use crate::error::Error;
+use crate::internal::starts_with;
+use crate::structure::StructType;
 use libffi::high::ffi_abi_FFI_DEFAULT_ABI;
 use libffi::low::ffi_cif;
 use libffi::raw::{ffi_call, ffi_prep_cif, ffi_raw, ffi_raw_call, ffi_status_FFI_BAD_ABI, ffi_status_FFI_BAD_ARGTYPE, ffi_status_FFI_BAD_TYPEDEF, ffi_status_FFI_OK, ffi_type, ffi_type_double, ffi_type_float, ffi_type_longdouble, ffi_type_pointer, ffi_type_sint16, ffi_type_sint32, ffi_type_sint64, ffi_type_sint8, ffi_type_uint16, ffi_type_uint32, ffi_type_uint64, ffi_type_uint8, ffi_type_void, FFI_TYPE_STRUCT};
@@ -8,24 +10,21 @@ use std::fmt;
 use std::fmt::{Display, Formatter};
 use std::mem::transmute;
 use std::ptr::null_mut;
-use crate::error::Error;
-use crate::internal::starts_with;
-use crate::structure::StructType;
 
 #[derive(Debug)]
 pub struct FuncHandle {
     desc: FuncDesc,
-    symbol: LibSymbol
+    symbol: *const c_void
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub struct FuncDesc {
+pub(crate) struct FuncDesc {
     argument_types: Box<[FuncType]>,
     return_type: FuncType,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub enum FuncType {
+pub(crate) enum FuncType {
     Auto, Void,
     Int, Float, Double, LongDouble, ISize, USize,
     S8, S16, S32, S64, U8, U16, U32, U64, F32, F64, F128,
@@ -42,7 +41,7 @@ struct FuncDescHelper {
 }
 
 impl FuncHandle {
-    pub(crate) fn new(symbol: LibSymbol, desc: &str) -> Result<Self, Error> {
+    pub(crate) fn new(symbol: *const c_void, desc: &str) -> Result<Self, Error> {
         let desc = FuncDesc::from_str(desc)?;
 
         // Verify
@@ -68,7 +67,7 @@ impl FuncHandle {
         Ok(Self { desc, symbol })
     }
 
-    pub fn desc(&self) -> &FuncDesc {
+    pub(crate) fn desc(&self) -> &FuncDesc {
         &self.desc
     }
 
@@ -92,7 +91,7 @@ impl FuncHandle {
 
             ffi_call(
                 &mut cif,
-                transmute(self.symbol.as_raw()),
+                transmute(self.symbol),
                 rvalue,
                 avalue
             );
@@ -119,19 +118,20 @@ impl FuncHandle {
 
             ffi_raw_call(
                 &mut cif,
-                transmute(self.symbol.as_raw()),
+                transmute(self.symbol),
                 result,
                 arguments
             );
         }
     }
 
-    pub fn as_raw(&self) -> &LibSymbol {
-        &self.symbol
+    pub fn as_raw(&self) -> *const c_void {
+        self.symbol
     }
 }
 
 impl FuncDesc {
+    #[cfg(test)]
     pub fn new(argument_types: Box<[FuncType]>, return_type: FuncType) -> Self {
         Self {
             argument_types,
@@ -165,6 +165,7 @@ impl FuncDesc {
 }
 
 impl FuncType {
+    #[cfg(test)]
     pub fn structure(fields: &[FuncType]) -> Self {
         Self::Struct(StructType::new(Vec::from(fields).into_boxed_slice()))
     }

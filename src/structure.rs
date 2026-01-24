@@ -8,7 +8,7 @@ use crate::error::Error;
 pub struct StructType(Box<[(FuncType, c_uint)]>, c_uint);
 
 impl StructType {
-    pub fn new(fields: Box<[FuncType]>) -> Self {
+    pub(crate) fn new(fields: Box<[FuncType]>) -> Self {
         let mut offset = 0 as c_uint;
         let mut fields_with_offset = Box::new(Vec::with_capacity(fields.len()));
         for field in fields {
@@ -46,7 +46,7 @@ impl StructType {
         Ok((&str[1..], StructType::new(fields.into_boxed_slice())))
     }
 
-    pub fn fields(&self) -> &[(FuncType, c_uint)] {
+    pub(crate) fn fields(&self) -> &[(FuncType, c_uint)] {
         &self.0
     }
 

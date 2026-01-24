@@ -21,11 +21,6 @@ pub struct LibHandleFuncList {
     func: ManuallyDrop<FuncHandle>
 }
 
-#[derive(Debug)]
-pub struct LibSymbol {
-    symbol: *const c_void
-}
-
 impl LibHandle {
     pub(crate) fn new(handle: *mut c_void) -> Self {
         Self {
@@ -48,18 +43,15 @@ impl LibHandle {
         }
     }
 
-    pub fn symbol(&self, name: &str) -> Result<LibSymbol, Error> {
+    pub fn symbol(&self, name: &str) -> Result<*const c_void, Error> {
         unsafe {
             let name = try_str_to_c_string(name)?;
             self._symbol(name.as_ptr())
         }
     }
 
-    pub(crate) unsafe fn _symbol(&self, name: *const c_char) -> Result<LibSymbol, Error> {
-        unsafe {
-            let symbol = crate::platform::unix::get_symbol(self.handle, name)?;
-            Ok(LibSymbol::new(symbol))
-        }
+    pub(crate) unsafe fn _symbol(&self, name: *const c_char) -> Result<*const c_void, Error> {
+        unsafe { crate::platform::unix::get_symbol(self.handle, name) }
     }
 
     pub fn func(&mut self, name: &str, desc: &str) -> Result<&FuncHandle, Error> {
@@ -115,15 +107,5 @@ impl Drop for LibHandle {
                 last_node = next;
             }
         }
-    }
-}
-
-impl LibSymbol {
-    pub(crate) fn new(symbol: *const c_void) -> Self {
-        Self { symbol }
-    }
-
-    pub fn as_raw(&self) -> *const c_void {
-        self.symbol
     }
 }
