@@ -47,6 +47,11 @@ pub unsafe extern "C" fn sffi_lib_func(r_func: *mut *const FuncHandle, handle: *
 }
 
 #[unsafe(no_mangle)]
+pub unsafe extern "C" fn sffi_lib_as_raw(handle: *const LibHandle) -> *mut c_void {
+    unsafe { (*handle).as_raw() }
+}
+
+#[unsafe(no_mangle)]
 pub unsafe extern "C" fn sffi_lib_close(handle: *mut LibHandle) {
     unsafe {
         drop_in_place(handle);
