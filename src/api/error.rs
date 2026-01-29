@@ -9,18 +9,18 @@ pub struct CError {
     message: *mut c_char,
 }
 
-pub const SFFI_NO_ERR: c_uint = 0;
-pub const SFFI_RUST_STR_TO_C_STR_ERR: c_uint = 1;
-pub const SFFI_C_STR_TO_RUST_STR_ERR: c_uint = 2;
-pub const SFFI_LIB_OPEN_ERR: c_uint = 3;
-pub const SFFI_LIB_SYMBOL_ERR: c_uint = 4;
-pub const SFFI_LIB_CLOSE_ERR: c_uint = 5;
-pub const SFFI_FFI_BAD_TYPEDEF_ERR: c_uint = 6;
-pub const SFFI_FFI_BAD_ABI_ERR: c_uint = 7;
-pub const SFFI_FFI_BAD_ARG_TYPEE_ERR: c_uint = 8;
-pub const SFFI_INVALID_DESCRIPTOR_ERR: c_uint = 9;
-pub const SFFI_INVALID_CAST_ERR: c_uint = 10;
-pub const SFFI_INVALID_ARGUMENTS_ERR: c_uint = 11;
+pub const SFFI_NO_ERR                   : c_uint = 0;
+pub const SFFI_RUST_STR_TO_C_STR_ERR    : c_uint = 1;
+pub const SFFI_C_STR_TO_RUST_STR_ERR    : c_uint = 2;
+pub const SFFI_LIB_OPEN_ERR             : c_uint = 3;
+pub const SFFI_LIB_SYMBOL_ERR           : c_uint = 4;
+pub const SFFI_LIB_CLOSE_ERR            : c_uint = 5;
+pub const SFFI_FFI_BAD_TYPEDEF_ERR      : c_uint = 6;
+pub const SFFI_FFI_BAD_ABI_ERR          : c_uint = 7;
+pub const SFFI_FFI_BAD_ARG_TYPEE_ERR    : c_uint = 8;
+pub const SFFI_INVALID_DESCRIPTOR_ERR   : c_uint = 9;
+pub const SFFI_INVALID_CAST_ERR         : c_uint = 10;
+pub const SFFI_INVALID_ARGUMENTS_ERR    : c_uint = 11;
 
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn sffi_error_code(error: *const CError) -> c_uint {
